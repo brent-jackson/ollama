@@ -1,0 +1,28 @@
+name: TMAS Scan
+
+on:
+  push:
+
+jobs:
+  tmas-scan:
+    name: TMAS Repo Scan
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: ollama
+      - name: snoop around
+        run: ls -la && ls -la ollama && ls -la ollama/.git
+
+      - name: Download TMAS and Scan Repo for Open Source Vulnerabilities and Secrets
+        uses: trendmicro/tmas-scan-action@v3.0.1
+        with:
+          version: '2'
+          vulnerabilitiesScan: true
+          malwareScan: false
+          secretsScan: true
+          artifact: dir:./ollama
+          additionalArgs: ${{ secrets.ADDITIONAL_ARGS }} --evaluatePolicy -vvv
+          tmasApiKey: ${{ secrets.TMAS_API_KEY }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
